@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Risk Topography — yCITIES Pre-Diligence Lab</title>
+  <meta name="description" content="Risk Topography: A first glance feedback map through an investor lens. For use by Pre-Diligence Lab judges evaluating early-stage ventures.">
+  <meta property="og:title" content="Risk Topography — yCITIES Pre-Diligence Lab">
+  <meta property="og:description" content="A structured scoring tool for evaluating early-stage ventures across Problem, Character, Setting, and Solution pillars.">
+  <meta property="og:type" content="website">
+  <link rel="canonical" href="https://youthcities.org/risk-topography.html">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ============================================================
+       Risk Topography — Page-specific styles
+       ============================================================ */
+
+    .topo-form { max-width: 920px; }
+
+    /* ---- Session Details ------------------------------------ */
+    .session-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem 2rem;
+    }
+
+    .form-group { display: flex; flex-direction: column; }
+
+    .form-group label {
+      font-family: 'Oswald', sans-serif;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #555;
+      margin-bottom: 0.35rem;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.6rem 0.75rem;
+      border: 1px solid #ccc;
+      font-family: 'Pontano Sans', Arial, sans-serif;
+      font-size: 1rem;
+      color: #444;
+      background: #fff;
+      border-radius: 0;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    .form-group select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23666' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      padding-right: 2rem;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: 3px solid #D4A017;
+      outline-offset: 1px;
+      border-color: #D4A017;
+    }
+    .form-group textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
+
+    /* ---- Progress ------------------------------------------ */
+    .progress-wrap {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      background: #f5f5f5;
+      border: 1px solid #e0e0e0;
+      border-left: 4px solid #d61920;
+      padding: 1rem 1.25rem;
+      margin: 2rem 0;
+    }
+
+    .progress-label {
+      font-family: 'Oswald', sans-serif;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #555;
+      white-space: nowrap;
+    }
+
+    .progress-bar-outer {
+      flex: 1;
+      height: 10px;
+      background: #ddd;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    .progress-bar-inner {
+      height: 100%;
+      background: #d61920;
+      width: 0%;
+      border-radius: 5px;
+      transition: width 0.3s ease;
+    }
+
+    .progress-count {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 500;
+      color: #222;
+      white-space: nowrap;
+      min-width: 110px;
+      text-align: right;
+    }
+
+    /* ---- Score Legend -------------------------------------- */
+    .score-legend {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding: 0.75rem 0;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      color: #555;
+    }
+    .legend-swatch {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      font-size: 1rem;
+      line-height: 1;
+    }
+    .legend-swatch.nascent { background: #e8e8e8; color: #555; border: 2px solid #aaa; }
+    .legend-swatch.forming { background: #D4A017; color: #111; border: 2px solid #D4A017; }
+    .legend-swatch.formed  { background: #d61920; color: #fff; border: 2px solid #d61920; }
+
+    /* ---- Pillar Blocks ------------------------------------- */
+    .pillar-block {
+      border: 1px solid #ddd;
+      border-top: 4px solid #d61920;
+      margin-bottom: 2rem;
+      background: #fff;
+    }
+
+    .pillar-header {
+      background: #f9f9f9;
+      border-bottom: 1px solid #e0e0e0;
+      padding: 0.9rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .pillar-title {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 500;
+      color: #000;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin: 0;
+    }
+
+    .pillar-badge {
+      font-family: 'Oswald', sans-serif;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: #d61920;
+      color: #fff;
+      padding: 0.2rem 0.6rem;
+    }
+
+    /* ---- Piece Rows ---------------------------------------- */
+    .piece-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 1rem 2rem;
+      align-items: center;
+      padding: 0.95rem 1.5rem;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .piece-row:last-child { border-bottom: none; }
+
+    .piece-info { min-width: 0; }
+
+    .piece-name {
+      font-family: 'Oswald', sans-serif;
+      font-size: 0.975rem;
+      font-weight: 500;
+      color: #111;
+      margin: 0 0 0.2rem;
+      line-height: 1.3;
+    }
+    .optional-tag {
+      font-family: 'Pontano Sans', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 400;
+      color: #999;
+      text-transform: none;
+      letter-spacing: 0;
+      margin-left: 0.4rem;
+    }
+    .piece-desc {
+      font-size: 0.875rem;
+      color: #666;
+      margin: 0;
+      line-height: 1.45;
+    }
+
+    /* ---- Score Radio Buttons ------------------------------- */
+    .score-group {
+      display: flex;
+      gap: 0.4rem;
+      flex-shrink: 0;
+    }
+
+    .score-option { position: relative; cursor: pointer; }
+
+    .score-option input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+      pointer-events: none;
+    }
+
+    .score-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.3rem 0.65rem;
+      border: 2px solid #ccc;
+      font-family: 'Oswald', sans-serif;
+      font-size: 0.775rem;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #888;
+      background: #fff;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    .score-option:hover .score-btn {
+      border-color: #999;
+      color: #444;
+      background: #f5f5f5;
+    }
+
+    /* Nascent — gray */
+    .score-option.opt-nascent input:checked ~ .score-btn {
+      background: #6c757d;
+      border-color: #6c757d;
+      color: #fff;
+    }
+    /* Forming — gold */
+    .score-option.opt-forming input:checked ~ .score-btn {
+      background: #D4A017;
+      border-color: #D4A017;
+      color: #111;
+    }
+    /* Formed — red */
+    .score-option.opt-formed input:checked ~ .score-btn {
+      background: #d61920;
+      border-color: #d61920;
+      color: #fff;
+    }
+
+    .score-option input:focus-visible ~ .score-btn {
+      outline: 3px solid #D4A017;
+      outline-offset: 2px;
+    }
+
+    /* ---- Prioritized Questions ----------------------------- */
+    .questions-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .question-row {
+      display: grid;
+      grid-template-columns: 2rem 1fr;
+      gap: 0.75rem;
+      align-items: start;
+    }
+    .question-num {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.75rem;
+      color: #d61920;
+      line-height: 1.15;
+      font-weight: 400;
+      text-align: center;
+    }
+
+    /* ---- Investor Reflection ------------------------------- */
+    .reflection-options {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin: 1rem 0 1.5rem;
+    }
+
+    .reflection-option { position: relative; cursor: pointer; }
+
+    .reflection-option input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+      pointer-events: none;
+    }
+
+    .reflection-btn {
+      display: inline-block;
+      padding: 0.5rem 1.1rem;
+      border: 2px solid #ccc;
+      font-family: 'Pontano Sans', Arial, sans-serif;
+      font-size: 0.9375rem;
+      color: #555;
+      background: #fff;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+      user-select: none;
+    }
+    .reflection-option:hover .reflection-btn {
+      border-color: #999;
+      color: #333;
+    }
+    .reflection-option input:checked ~ .reflection-btn {
+      background: #d61920;
+      border-color: #d61920;
+      color: #fff;
+    }
+    .reflection-option input:focus-visible ~ .reflection-btn {
+      outline: 3px solid #D4A017;
+      outline-offset: 2px;
+    }
+
+    /* ---- Export Band --------------------------------------- */
+    .export-band {
+      background: #f5f5f5;
+      border-top: 4px solid #d61920;
+      padding: 3rem 0;
+      text-align: center;
+    }
+    .export-band h2 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 400;
+      text-transform: uppercase;
+      color: #111;
+      margin-bottom: 0.6rem;
+    }
+    .export-note {
+      font-size: 0.875rem;
+      color: #777;
+      margin-top: 0.75rem;
+      margin-bottom: 0;
+    }
+
+    /* ---- Responsive --------------------------------------- */
+    @media (max-width: 700px) {
+      .session-grid { grid-template-columns: 1fr; }
+
+      .piece-row {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+      }
+
+      .score-group { flex-wrap: wrap; }
+
+      .progress-wrap { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+      .progress-count { text-align: left; min-width: 0; }
+
+      .pillar-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+    }
+
+    /* ============================================================
+       Print / PDF Export Styles
+       ============================================================ */
+    @media print {
+      .site-header,
+      .site-footer,
+      .breadcrumb,
+      .page-hero,
+      .export-band,
+      .nav-toggle,
+      .skip-link { display: none !important; }
+
+      body { font-size: 11px; color: #000; }
+      html { font-size: 14px; }
+
+      section { padding: 0.75rem 0 !important; }
+      .container { width: 100%; max-width: 100%; }
+
+      .topo-form { max-width: 100%; }
+
+      .pillar-block {
+        break-inside: avoid;
+        page-break-inside: avoid;
+        border: 1px solid #ccc;
+        border-top: 3px solid #d61920;
+        margin-bottom: 1rem;
+      }
+
+      .piece-row { break-inside: avoid; page-break-inside: avoid; }
+
+      /* Force colors to print */
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      .score-option.opt-nascent input:checked ~ .score-btn {
+        background: #6c757d !important;
+        color: #fff !important;
+      }
+      .score-option.opt-forming input:checked ~ .score-btn {
+        background: #D4A017 !important;
+        color: #111 !important;
+      }
+      .score-option.opt-formed input:checked ~ .score-btn {
+        background: #d61920 !important;
+        color: #fff !important;
+      }
+      .reflection-option input:checked ~ .reflection-btn {
+        background: #d61920 !important;
+        color: #fff !important;
+      }
+
+      .progress-bar-inner {
+        background: #d61920 !important;
+      }
+
+      /* Print header to replace site header */
+      .print-header {
+        display: block !important;
+        border-bottom: 2px solid #d61920;
+        padding-bottom: 0.75rem;
+        margin-bottom: 1rem;
+      }
+      .print-header h1 {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.4rem;
+        color: #d61920;
+        text-transform: uppercase;
+        margin: 0 0 0.2rem;
+      }
+      .print-header p {
+        font-size: 0.85rem;
+        color: #555;
+        margin: 0;
+      }
+
+      .print-footer {
+        display: block !important;
+        border-top: 1px solid #ccc;
+        margin-top: 1rem;
+        padding-top: 0.5rem;
+        font-size: 0.75rem;
+        color: #888;
+        text-align: center;
+      }
+    }
+
+    /* Hidden by default; shown only in print */
+    .print-header,
+    .print-footer { display: none; }
+  </style>
+</head>
+<body>
+
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- ===== HEADER ===== -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo-link" aria-label="yCITIES — Return to homepage">
+        <img src="images/yCITIES-logo.png" alt="yCITIES logo" class="logo">
+      </a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="main-nav" aria-label="Toggle navigation menu">
+        <span class="hamburger" aria-hidden="true"></span>
+      </button>
+      <nav id="main-nav" class="main-nav" aria-label="Main navigation">
+        <ul class="nav-list">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="founder.html">Founder</a></li>
+          <li class="has-dropdown">
+            <a href="programs.html" aria-haspopup="true" aria-expanded="false">Educational Programs <span class="arrow" aria-hidden="true">▾</span></a>
+            <ul class="dropdown" role="menu" aria-label="Educational Programs submenu">
+              <li class="dropdown-group-label" aria-hidden="true">Emerging &amp; Established Professionals</li>
+              <li role="none"><a href="imii.html" role="menuitem">Inside the Mind of an Investor Intensive</a></li>
+              <li role="none"><a href="pre-diligence-lab.html" role="menuitem">Pre-Diligence Lab Practicum</a></li>
+              <li class="dropdown-group-label" aria-hidden="true">Middle and High School Kids</li>
+              <li role="none"><a href="fundingiq.html" role="menuitem">FundingIQ Intensive</a></li>
+              <li role="none"><a href="youth-venture-mentoring.html" role="menuitem">Youth Venture Mentoring Network</a></li>
+            </ul>
+          </li>
+          <li class="active"><a href="pre-diligence-memos.html" aria-current="page">Pre-Diligence Memos</a></li>
+          <li><a href="founder-submissions.html">Founder Submissions</a></li>
+          <li><a href="mangrove-circle.html">Mangrove Circle</a></li>
+          <li><a href="musings.html">Musings</a></li>
+          <li><a href="https://ycities-turtleboat.vercel.app" target="_blank" rel="noopener noreferrer">Turtleboat <span class="ext-icon" aria-label="(opens in new tab)">↗</span></a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ===== MAIN ===== -->
+  <main id="main-content">
+
+    <!-- Page Hero -->
+    <div class="page-hero">
+      <div class="container">
+        <p style="font-family:'Oswald',sans-serif; font-size:0.875rem; text-transform:uppercase; letter-spacing:0.08em; color:rgba(255,255,255,0.75); margin-bottom:0.5rem;">Pre-Diligence Lab — Judge Tool</p>
+        <h1>Risk Topography</h1>
+        <p class="subtitle">A first glance feedback map through an investor lens</p>
+      </div>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <div class="container">
+        <a href="index.html">Home</a><span aria-hidden="true">›</span>
+        <a href="pre-diligence-memos.html">Pre-Diligence Memos</a><span aria-hidden="true">›</span>
+        Risk Topography
+      </div>
+    </div>
+
+    <!-- ===== FORM ===== -->
+    <section class="section-white">
+      <div class="container">
+
+        <!-- Print-only header (hidden on screen) -->
+        <div class="print-header" aria-hidden="true">
+          <h1>Risk Topography</h1>
+          <p>yCITIES Pre-Diligence Lab &mdash; A first glance feedback map through an investor lens</p>
+        </div>
+
+        <form id="topoForm" class="topo-form" novalidate aria-label="Risk Topography scoring form">
+
+          <!-- ---- Session Details ---- -->
+          <h2 class="section-heading" style="margin-bottom:1.25rem;">Session Details</h2>
+          <div class="session-grid" style="margin-bottom:2rem;">
+            <div class="form-group">
+              <label for="ventureName">Venture Name</label>
+              <input type="text" id="ventureName" name="venture_name" placeholder="e.g. Acme BioTech" autocomplete="off">
+            </div>
+            <div class="form-group">
+              <label for="sessionDate">Date</label>
+              <input type="date" id="sessionDate" name="session_date">
+            </div>
+            <div class="form-group">
+              <label for="yourRole">Your Role</label>
+              <select id="yourRole" name="your_role">
+                <option value="" disabled selected>Select&hellip;</option>
+                <option value="investor_analyst">Investor / Analyst</option>
+                <option value="mentor">Mentor</option>
+                <option value="founder_self">Founder Self-Assessment</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="interactionType">Interaction Type</label>
+              <select id="interactionType" name="interaction_type">
+                <option value="" disabled selected>Select&hellip;</option>
+                <option value="pitch_deck">Pitch Deck</option>
+                <option value="live_pitch">Live Pitch</option>
+                <option value="first_conversation">First Conversation</option>
+                <option value="demo_day">Demo Day</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- ---- Founder's Note ---- -->
+          <div class="note-box" style="margin-bottom:2rem;">
+            <strong>A Note on This Tool</strong>
+            This is not an evaluation. It is a first glance feedback map of what an eye notices through an investor lens — which pieces of the story came through clearly, which were blurry, and which were not yet visible in the deck, pitch, or first conversation.
+            <br><br>
+            Incomplete information is expected at pre-seed and seed stage. This reflection focuses on story alignment with storytelling goals, not a verdict on the venture.
+          </div>
+
+          <!-- ---- Progress ---- -->
+          <div class="progress-wrap" role="status" aria-live="polite" aria-atomic="true">
+            <span class="progress-label">Progress</span>
+            <div class="progress-bar-outer" aria-hidden="true">
+              <div class="progress-bar-inner" id="progressBar"></div>
+            </div>
+            <span class="progress-count" id="progressCount">0 of 24 Scored</span>
+          </div>
+
+          <!-- ---- Score Legend ---- -->
+          <div class="score-legend" aria-label="Scoring legend">
+            <span style="font-family:'Oswald',sans-serif; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.06em; color:#555; margin-right:0.25rem;">Legend:</span>
+            <span class="legend-item">
+              <span class="legend-swatch nascent" aria-hidden="true">○</span>
+              Nascent — not yet visible
+            </span>
+            <span class="legend-item">
+              <span class="legend-swatch forming" aria-hidden="true">◑</span>
+              Forming — partially visible
+            </span>
+            <span class="legend-item">
+              <span class="legend-swatch formed" aria-hidden="true">●</span>
+              Formed — clearly visible
+            </span>
+          </div>
+
+          <!-- ================================================================
+               PILLAR 1 — PROBLEM
+               ================================================================ -->
+          <div class="pillar-block" aria-labelledby="pillar-problem-title">
+            <div class="pillar-header">
+              <h3 class="pillar-title" id="pillar-problem-title">Problem Pillar</h3>
+              <span class="pillar-badge" aria-label="6 pieces">6 Pieces</span>
+            </div>
+
+            <!-- P1.1 Problem Anatomy -->
+            <div class="piece-row">
+              <div class="piece-info">
+                <h4 class="piece-name">Problem Anatomy</h4>
+                <p class="piece-desc">Understanding of pain points, root drivers, and downstream impact</p>
+              </div>
+              <div class="score-group" role="group" aria-label="Score for Problem Anatomy">
+                <label class="score-option opt-nascent">
+                  <input type="radio" name="p1_anatomy" value="nascent" aria-label="Nascent">
+                  <span class="score-btn">○ Nascent</span>
+                </label>
+                <label class="score-option opt-forming">
+                  <input type="radio" name="p1_anatomy" value="forming" aria-label="Forming">
+                  <span class="score-btn">◑ Forming</span>
+                </label>
+                <label class="score-option opt-formed">
+                  <input type="radio" name="p1_anatomy" value="formed" aria-label="Formed">
+                  <span class="score-btn">● Formed</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- P1.2 Severity & Frequency -->
+            <div class="piece-row">
+              <div class="piece-info">
+                <h4 class="piece-name">Severity &amp; Frequency</h4>
+                <p class="piece-desc">Quantifying pain in units of time, money, or consequence</p>
+              </div>
+              <div class="score-group" role="group" aria-label="Score for Severity and Frequency">
+                <label class="score-option opt-nascent">
+                  <input type="radio" name="p1_severity" value="nascent" aria-label="Nascent">
+                  <span class="score-btn">○ Nascent</span>
+                </label>
+                <label class="score-option opt-forming">
+                  <input type="radio" name="p1_severity" value="forming" aria-label="Forming">
+                  <span class="score-btn">◑ Forming</span>
+                </label>
+                <label class="score-option opt-formed">
+                  <input type="radio" name="p1_severity" value="formed" aria-label="Formed">
+                  <span class="score-btn">● Formed</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- P1.3 Pain Portability -->
+            <div class="piece-row">
+              <div class="piece-info">
+                <h4 class="piece-name">Pain Portability</h4>
+                <p class="piece-desc">How the pain manifests permanently, temporarily, or situationally across contexts</p>
+              </div>
+              <div class="score-group" role="group" aria-label="Score for Pain Portability">
+                <label class="score-option opt-nascent">
+                  <input type="radio" name="p1_portability" value="nascent" aria-label="Nascent">
+                  <span class="score-btn">○ Nascent</span>
+                </label>
+                <label class="score-option opt-forming">
+                  <input type="radio" name="p1_portability" value="forming" aria-label="Forming">
+                  <span class="score-btn">◑ Forming</span>
+                </label>
+                <label class="score-option opt-formed">
+                  <input type="radio" name="p1_portability" value="formed" aria-label="Formed">
+                  <span class="score-btn">● Formed</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- P1.4 Value Creation vs. Capture -->
+            <div class="piece-row">
+              <div class="piece-info">
+                <h4 class="piece-name">Value Creation vs. Capture</h4>
+                <p class="piece-desc">How alleviated pain translates to revenue — and for whom</p>
+              </div>
+              <div class="score-group" role="group" aria-label="Score for Value Creation vs Capture">
+                <label class="score-option opt-nascent">
+                  <input type="radio" name="p1_value" value="nascent" aria-label="Nascent">
+                  <span class="score-btn">○ Nascent</span>
+                </label>
+                <label class="score-option opt-forming">
+                  <input type="radio" name="p1_value" value="forming" aria-label="Forming">
+                  <span class="score-btn">◑ Forming</span>
+                </label>
+                <label class="score-option opt-formed">
+                  <input type="radio" name="p1_value" value="formed" aria-label="Formed">
+                  <span class="score-btn">● Formed</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- P1.5 Competitive Landscape -->
+            <div class="piece-row">
+              <div class="piece-info">
+                <h4 class="piece-name">Competitive Landscape</h4>
+                <p class="piece-desc">Existing market products that address the same problem — and how this differs</p>
+              </div>
+              <div class="score-group" role="group" aria-label="Score for Competitive Landscape">
+                <label class="score-option opt-nascent">
+                  <input type="radio" name="p1_competitive" value="nascent" aria-label="Nascent">
+                  <span class="score-btn">○ Nascent</span>
+                </label>
+                <label class="score-option opt-forming">
+                  <input type="radio" name="p1_competitive" value="forming" aria-label="Forming">
+                  <span class="score-btn">◑ Forming</span>
+                </label>
+                <label class="score-option opt-formed">
+                  <input type="radio" name="p1_competitive" value="formed" aria-label="Formed">
+                  <span class="score-btn">● Formed</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- P1.6 Founder Ambition & Problem Scope -->
+            <div class="piece-row">
+              <div class="piece-info">
+                <h4 class="piece-name">Founder Ambition &amp; Problem Scope</h4>
+                <p class="piece-desc">Alignment between problem size, funding goals, and investor return expectations</p>
+              </div>
+              <div class="score-group" role="group" aria-label="Score for Founder Ambition and Problem Scope">
+                <label class="score-option opt-nascent">
+                  <input type="radio" name="p1_ambition" value="nascent" aria-label="Nascent">
+                  <span class="score-btn">○ Nascent</span>
+                </label>
+                <label class="score-option opt-forming">
+                  <input type="radio" name="p1_ambition" value="forming" aria-label="Forming">
+                  <span class="score-btn">◑ Forming</span>
+                </label>
+                <label class="score-option opt-formed">
+                  <input type="radio" name="p1_ambition" value="formed" aria-label="Formed">
+                  <span class="score-btn">● Formed</span>
+                </label>
+              </div>
+            </div>
+
+          </div><!-- /pillar-block problem -->
+
+
+          <!-- ================================================================
+               PILLAR 2 — CHARACTER
+               ================================================================ -->
+          <div class="pillar-block" aria-labelledby="pillar-character-title">
+            <div class="pillar-header">
+              <h3 class="pillar-title" id="pillar-character-title">Character Pillar</h3>
+              <span class="pillar-badge" aria-label="6 pieces">6 Pieces</span>
+            </div>
+
+            <!-- P2.1 Who Is This Built For -->
+            <div class="piece-row">
+              <div class="piece-info">
+                <h4 class="piece-name">Who Is This Built For</h4>
+                <p class="piece-desc">User definition — behaviors, context, unmet need, and who is not the user</p>
+              </div>
+              <div class="score-group" role="group" aria-label="Score for Who Is This Built For">
+                <label class="score-option opt-nascent">
+                  <input type="radio" name="p2_who_for" value="nascent" aria-label="Nascent">
+                  <span class="score-btn">○ Nascent</span>
+                </label>
+                <label class="score-option opt-forming">
+                  <input type="radio" name="p2_who_for" value="forming" aria-label="Forming">
+                  <span class="score-btn">◑ Forming</span>
+                </label>
+                <label class="score-option opt-formed">
+                  <input type="radio" name="p2_who_for" value="formed" aria-label="Formed">
+                  <span class="score-btn">● Formed</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- P2.2 Who Should Care & Why -->
+            <div class="piece-row">
+              <div class="piece-info">
+                <h4 class="piece-name">Who Should Care &amp; Why</h4>
+                <p class="piece-desc">Other stakeholders — those who help or hinder adoption and implementation</p>
+              </div>
+              <div class="score-group" role="group" aria-label="Score for Who Should Care and Why">
+                <label class="score-option opt-nascent">
+                  <input type="radio" name="p2_who_cares" value="nascent" aria-label="Nascent">
+                  <span class="score-btn">○ Nascent</span>
+                </label>
+                <label class="score-option opt-forming">
+                  <input type="radio" name="p2_who_cares" value="forming" aria-label="Forming">
+                  <span class="score-btn">◑ Forming</span>
+                </label>
+                <label class="score-option opt-formed">
+                  <input type="radio" name="p2_who_cares" value="formed" aria-label="Formed">
+                  <span class="score-btn">● Formed</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- P2.3 User / Payer / Buyer -->
+            <div class="piece-row">
+              <div class="piece-info">
+                <h4 class="piece-name">User / Payer / Buyer</h4>
+                <p class="piece-desc">Clarity on revenue relationships — who uses, who pays, and who decides</p>
+              </div>
+              <div class="score-group" role="group" aria-label="Score for User Payer Buyer">
+                <label class="score-option opt-nascent">
+                  <input type="radio" name="p2_payer" value="nascent" aria-label="Nascent">
+                  <span class="score-btn">○ Nascent</span>
+                </label>
+                <label class="score-option opt-forming">
+                  <input type="radio" name="p2_payer" value="forming" aria-label="Forming">
+                  <span class="score-btn">◑ Forming</span>
+                </label>
+                <label class="score-option opt-formed">
+                  <input type="radio" name="p2_payer" value="formed" aria-label="Formed">
+                  <span class="score-btn">● Formed</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- P2.4 How People Cope Today -->
+            <div class="piece-row">
+              <div class="piece-info">
+                <h4 class="piece-name">How People Cope Today</h4>
+                <p class="piece-desc">Current workarounds and what they reveal about the depth of the problem</p>
+              </div>
+              <div class="score-group" role="group" aria-label="Score for How People Cope Today">
+                <label class="score-option opt-nascent">
+                  <input type="radio" name="p2_cope" value="nascent" aria-label="Nascent">
+                  <span class="score-btn">○ Nascent</span>
+                </label>
+                <label class="score-option opt-forming">
+                  <input type="radio" name="p2_cope" value="forming" aria-label="Forming">
+                  <span class="score-btn">◑ Forming</span>
+                </label>
+                <label class="score-option opt-formed">
+                  <input type="radio" name="p2_cope" value="formed" aria-label="Formed">
+                  <span class="score-btn">● Formed</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- P2.5 Potential Acquirers -->
+            <div class="piece-row">
+              <div class="piece-info">
+                <h4 class="piece-name">Potential Acquirers</h4>
+                <p class="piece-desc">Strategic fit for acquisition — precedent, motivation, and logical buyers</p>
+              </div>
+              <div class="score-group" role="group" aria-label="Score for Potential Acquirers">
+                <label class="score-option opt-nascent">
+                  <input type="radio" name="p2_acquirers" value="nascent" aria-label="Nascent">
+                  <span class="score-btn">○ Nascent</span>
+                </label>
+                <label class="score-option opt-forming">
+                  <input type="radio" name="p2_acquirers" value="forming" aria-label="Forming">
+                  <span class="score-btn">◑ Forming</span>
+                </label>
+                <label class="score-option opt-formed">
+                  <input type="radio" name="p2_acquirers" value="formed" aria-label="Formed">
+                  <span class="score-btn">● Formed</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- P2.6 Investor Alignment Combination Lock (Optional) -->
+            <div class="piece-row">
+              <div class="piece-info">
+                <h4 class="piece-name">Investor Alignment Combination Lock <span class="optional-tag">(Optional)</span></h4>
+                <p class="piece-desc">Visible signals that this venture aligns with investor thesis, stage, and sector focus</p>
+              </div>
+              <div class="score-group" role="group" aria-label="Score for Investor Alignment Combination Lock, optional">
+                <label class="score-option opt-nascent">
+                  <input type="radio" name="p2_alignment" value="nascent" aria-label="Nascent">
+                  <span class="score-btn">○ Nascent</span>
+                </label>
+                <label class="score-option opt-forming">
+                  <input type="radio" name="p2_alignment" value="forming" aria-label="Forming">
+                  <span class="score-btn">◑ Forming</span>
+                </label>
+                <label class="score-option opt-formed">
+                  <input type="radio" name="p2_alignment" value="formed" aria-label="Formed">
+                  <span class="score-btn">● Formed</span>
+                </label>
+              </div>
+            </div>
+
+          </div><!-- /pillar-block character -->
+
+
+          <!-- ================================================================
+               PILLAR 3 — SETTING
+               ================================================================ -->
+          <div class="pillar-block" aria-labelledby="pillar-setting-title">
+            <div class="pillar-header">
+              <h3 class="pillar-title" id="pillar-setting-title">Setting Pillar</h3>
+              <span class="pillar-badge" aria-label="6 pieces">6 Pieces</span>
+            </div>
+
+            <!-- P3.1 Last Mile Friction -->
+            <div class="piece-row">
+              <div class="piece-info">
+                <h4 class="piece-name">Last Mile Friction</h4>
+                <p class="piece-desc">Whether the solution is accessible when and where the user actually needs it</p>
+              </div>
+              <div class="score-group" role="group" aria-label="Score for Last Mile Friction">
+                <label class="score-option opt-nascent">
+                  <input type="radio" name="p3_lastmile" value="nascent" aria-label="Nascent">
+                  <span class="score-btn">○ Nascent</span>
+                </label>
+                <label class="score-option opt-forming">
+                  <input type="radio" name="p3_lastmile" value="forming" aria-label="Forming">
+                  <span class="score-btn">◑ Forming</span>
+                </label>
+                <label class="score-option opt-formed">
+                  <input type="radio" name="p3_lastmile" value="formed" aria-label="Formed">
+                  <span class="score-btn">● Formed</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- P3.2 Infrastructure Fit -->
+            <div class="piece-row">
+              <div class="piece-info">
+                <h4 class="piece-name">Infrastructure Fit</h4>
+                <p class="piece-desc">Whether the required infrastructure exists — or must be built — for this to work</p>
+              </div>
+              <div class="score-group" role="group" aria-label="Score for Infrastructure Fit">
+                <label class="score-option opt-nascent">
+                  <input type="radio" name="p3_infra" value="nascent" aria-label="Nascent">
+                  <span class="score-btn">○ Nascent</span>
+                </label>
+                <label class="score-option opt-forming">
+                  <input type="radio" name="p3_infra" value="forming" aria-label="Forming">
+                  <span class="score-btn">◑ Forming</span>
+                </label>
+                <label class="score-option opt-formed">
+                  <input type="radio" name="p3_infra" value="formed" aria-label="Formed">
+                  <span class="score-btn">● Formed</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- P3.3 Rules, Regulations & Processes -->
+            <div class="piece-row">
+              <div class="piece-info">
+                <h4 class="piece-name">Rules, Regulations &amp; Processes</h4>
+                <p class="piece-desc">Legal, compliance, or process dependencies that could accelerate or block deployment</p>
+              </div>
+              <div class="score-group" role="group" aria-label="Score for Rules Regulations and Processes">
+                <label class="score-option opt-nascent">
+                  <input type="radio" name="p3_regs" value="nascent" aria-label="Nascent">
+                  <span class="score-btn">○ Nascent</span>
+                </label>
+                <label class="score-option opt-forming">
+                  <input type="radio" name="p3_regs" value="forming" aria-label="Forming">
+                  <span class="score-btn">◑ Forming</span>
+                </label>
+                <label class="score-option opt-formed">
+                  <input type="radio" name="p3_regs" value="formed" aria-label="Formed">
+                  <span class="score-btn">● Formed</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- P3.4 Cultural & Political Context -->
+            <div class="piece-row">
+              <div class="piece-info">
+                <h4 class="piece-name">Cultural &amp; Political Context</h4>
+                <p class="piece-desc">Social and political forces that could accelerate adoption or create resistance</p>
+              </div>
+              <div class="score-group" role="group" aria-label="Score for Cultural and Political Context">
+                <label class="score-option opt-nascent">
+                  <input type="radio" name="p3_cultural" value="nascent" aria-label="Nascent">
+                  <span class="score-btn">○ Nascent</span>
+                </label>
+                <label class="score-option opt-forming">
+                  <input type="radio" name="p3_cultural" value="forming" aria-label="Forming">
+                  <span class="score-btn">◑ Forming</span>
+                </label>
+                <label class="score-option opt-formed">
+                  <input type="radio" name="p3_cultural" value="formed" aria-label="Formed">
+                  <span class="score-btn">● Formed</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- P3.5 Why Now -->
+            <div class="piece-row">
+              <div class="piece-info">
+                <h4 class="piece-name">Why Now</h4>
+                <p class="piece-desc">The timing rationale — what has changed to make this the right moment</p>
+              </div>
+              <div class="score-group" role="group" aria-label="Score for Why Now">
+                <label class="score-option opt-nascent">
+                  <input type="radio" name="p3_whynow" value="nascent" aria-label="Nascent">
+                  <span class="score-btn">○ Nascent</span>
+                </label>
+                <label class="score-option opt-forming">
+                  <input type="radio" name="p3_whynow" value="forming" aria-label="Forming">
+                  <span class="score-btn">◑ Forming</span>
+                </label>
+                <label class="score-option opt-formed">
+                  <input type="radio" name="p3_whynow" value="formed" aria-label="Formed">
+                  <span class="score-btn">● Formed</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- P3.6 Geography & Environment -->
+            <div class="piece-row">
+              <div class="piece-info">
+                <h4 class="piece-name">Geography &amp; Environment</h4>
+                <p class="piece-desc">Solution viability across geographic conditions, climates, and physical contexts</p>
+              </div>
+              <div class="score-group" role="group" aria-label="Score for Geography and Environment">
+                <label class="score-option opt-nascent">
+                  <input type="radio" name="p3_geography" value="nascent" aria-label="Nascent">
+                  <span class="score-btn">○ Nascent</span>
+                </label>
+                <label class="score-option opt-forming">
+                  <input type="radio" name="p3_geography" value="forming" aria-label="Forming">
+                  <span class="score-btn">◑ Forming</span>
+                </label>
+                <label class="score-option opt-formed">
+                  <input type="radio" name="p3_geography" value="formed" aria-label="Formed">
+                  <span class="score-btn">● Formed</span>
+                </label>
+              </div>
+            </div>
+
+          </div><!-- /pillar-block setting -->
+
+
+          <!-- ================================================================
+               PILLAR 4 — SOLUTION
+               ================================================================ -->
+          <div class="pillar-block" aria-labelledby="pillar-solution-title">
+            <div class="pillar-header">
+              <h3 class="pillar-title" id="pillar-solution-title">Solution Pillar</h3>
+              <span class="pillar-badge" aria-label="6 pieces">6 Pieces</span>
+            </div>
+
+            <!-- P4.1 The Moat -->
+            <div class="piece-row">
+              <div class="piece-info">
+                <h4 class="piece-name">The Moat</h4>
+                <p class="piece-desc">Defensibility and competitive barriers — what prevents replication</p>
+              </div>
+              <div class="score-group" role="group" aria-label="Score for The Moat">
+                <label class="score-option opt-nascent">
+                  <input type="radio" name="p4_moat" value="nascent" aria-label="Nascent">
+                  <span class="score-btn">○ Nascent</span>
+                </label>
+                <label class="score-option opt-forming">
+                  <input type="radio" name="p4_moat" value="forming" aria-label="Forming">
+                  <span class="score-btn">◑ Forming</span>
+                </label>
+                <label class="score-option opt-formed">
+                  <input type="radio" name="p4_moat" value="formed" aria-label="Formed">
+                  <span class="score-btn">● Formed</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- P4.2 10x or 10% -->
+            <div class="piece-row">
+              <div class="piece-info">
+                <h4 class="piece-name">10x or 10%</h4>
+                <p class="piece-desc">Magnitude of improvement and whether switching cost is worth the gain</p>
+              </div>
+              <div class="score-group" role="group" aria-label="Score for 10x or 10 percent">
+                <label class="score-option opt-nascent">
+                  <input type="radio" name="p4_10x" value="nascent" aria-label="Nascent">
+                  <span class="score-btn">○ Nascent</span>
+                </label>
+                <label class="score-option opt-forming">
+                  <input type="radio" name="p4_10x" value="forming" aria-label="Forming">
+                  <span class="score-btn">◑ Forming</span>
+                </label>
+                <label class="score-option opt-formed">
+                  <input type="radio" name="p4_10x" value="formed" aria-label="Formed">
+                  <span class="score-btn">● Formed</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- P4.3 Repeatability -->
+            <div class="piece-row">
+              <div class="piece-info">
+                <h4 class="piece-name">Repeatability</h4>
+                <p class="piece-desc">Scalability and compounding potential — can value compound with each additional user or use?</p>
+              </div>
+              <div class="score-group" role="group" aria-label="Score for Repeatability">
+                <label class="score-option opt-nascent">
+                  <input type="radio" name="p4_repeat" value="nascent" aria-label="Nascent">
+                  <span class="score-btn">○ Nascent</span>
+                </label>
+                <label class="score-option opt-forming">
+                  <input type="radio" name="p4_repeat" value="forming" aria-label="Forming">
+                  <span class="score-btn">◑ Forming</span>
+                </label>
+                <label class="score-option opt-formed">
+                  <input type="radio" name="p4_repeat" value="formed" aria-label="Formed">
+                  <span class="score-btn">● Formed</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- P4.4 Go-To-Market -->
+            <div class="piece-row">
+              <div class="piece-info">
+                <h4 class="piece-name">Go-To-Market</h4>
+                <p class="piece-desc">Strategy alignment with current phase, realistic first customers, and how it evolves</p>
+              </div>
+              <div class="score-group" role="group" aria-label="Score for Go-To-Market">
+                <label class="score-option opt-nascent">
+                  <input type="radio" name="p4_gtm" value="nascent" aria-label="Nascent">
+                  <span class="score-btn">○ Nascent</span>
+                </label>
+                <label class="score-option opt-forming">
+                  <input type="radio" name="p4_gtm" value="forming" aria-label="Forming">
+                  <span class="score-btn">◑ Forming</span>
+                </label>
+                <label class="score-option opt-formed">
+                  <input type="radio" name="p4_gtm" value="formed" aria-label="Formed">
+                  <span class="score-btn">● Formed</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- P4.5 Reality vs. Vision -->
+            <div class="piece-row">
+              <div class="piece-info">
+                <h4 class="piece-name">Reality vs. Vision</h4>
+                <p class="piece-desc">What is proven vs. imagined — and how that ratio reduces or amplifies risk</p>
+              </div>
+              <div class="score-group" role="group" aria-label="Score for Reality vs Vision">
+                <label class="score-option opt-nascent">
+                  <input type="radio" name="p4_reality" value="nascent" aria-label="Nascent">
+                  <span class="score-btn">○ Nascent</span>
+                </label>
+                <label class="score-option opt-forming">
+                  <input type="radio" name="p4_reality" value="forming" aria-label="Forming">
+                  <span class="score-btn">◑ Forming</span>
+                </label>
+                <label class="score-option opt-formed">
+                  <input type="radio" name="p4_reality" value="formed" aria-label="Formed">
+                  <span class="score-btn">● Formed</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- P4.6 Is the Product Actually a Solution -->
+            <div class="piece-row">
+              <div class="piece-info">
+                <h4 class="piece-name">Is the Product Actually a Solution</h4>
+                <p class="piece-desc">Design alignment with real user capabilities, context, and constraints</p>
+              </div>
+              <div class="score-group" role="group" aria-label="Score for Is the Product Actually a Solution">
+                <label class="score-option opt-nascent">
+                  <input type="radio" name="p4_issolution" value="nascent" aria-label="Nascent">
+                  <span class="score-btn">○ Nascent</span>
+                </label>
+                <label class="score-option opt-forming">
+                  <input type="radio" name="p4_issolution" value="forming" aria-label="Forming">
+                  <span class="score-btn">◑ Forming</span>
+                </label>
+                <label class="score-option opt-formed">
+                  <input type="radio" name="p4_issolution" value="formed" aria-label="Formed">
+                  <span class="score-btn">● Formed</span>
+                </label>
+              </div>
+            </div>
+
+          </div><!-- /pillar-block solution -->
+
+
+          <!-- ================================================================
+               PRIORITIZED QUESTIONS
+               ================================================================ -->
+          <section class="section-gray" style="margin: 0 -5%; padding: 2rem 5%; margin-bottom: 2rem;">
+            <h2 class="section-heading" style="font-size:1.35rem; margin-bottom:0.5rem;">3 Prioritized Questions for the Founder</h2>
+            <p style="font-size:0.9375rem; color:#666; margin-bottom:1.25rem;">Based on this topography, what are the three most important things you'd want the founder to address?</p>
+
+            <div class="questions-list">
+              <div class="question-row">
+                <span class="question-num" aria-hidden="true">1</span>
+                <div class="form-group" style="margin:0;">
+                  <label for="q1" class="sr-only">Question 1 for founder</label>
+                  <textarea id="q1" name="question_1" rows="2" placeholder="Your most important question…" aria-label="Priority question 1 for the founder"></textarea>
+                </div>
+              </div>
+              <div class="question-row">
+                <span class="question-num" aria-hidden="true">2</span>
+                <div class="form-group" style="margin:0;">
+                  <label for="q2" class="sr-only">Question 2 for founder</label>
+                  <textarea id="q2" name="question_2" rows="2" placeholder="Your second question…" aria-label="Priority question 2 for the founder"></textarea>
+                </div>
+              </div>
+              <div class="question-row">
+                <span class="question-num" aria-hidden="true">3</span>
+                <div class="form-group" style="margin:0;">
+                  <label for="q3" class="sr-only">Question 3 for founder</label>
+                  <textarea id="q3" name="question_3" rows="2" placeholder="Your third question…" aria-label="Priority question 3 for the founder"></textarea>
+                </div>
+              </div>
+            </div>
+          </section>
+
+
+          <!-- ================================================================
+               OPTIONAL INVESTOR REFLECTION
+               ================================================================ -->
+          <div style="margin-bottom:2rem;">
+            <h2 class="section-heading" style="font-size:1.35rem; margin-bottom:0.4rem;">Investor Reflection <span style="font-family:'Pontano Sans',sans-serif; font-size:0.9rem; font-weight:400; text-transform:none; letter-spacing:0; color:#888;">(Optional)</span></h2>
+            <p style="font-size:0.9375rem; color:#666; margin-bottom:0.5rem;">Based on your overall read of this topography, how would you characterize the signal?</p>
+
+            <div class="reflection-options" role="group" aria-label="Investor reflection signal">
+              <label class="reflection-option">
+                <input type="radio" name="reflection_signal" value="too_early">
+                <span class="reflection-btn">Too early to tell</span>
+              </label>
+              <label class="reflection-option">
+                <input type="radio" name="reflection_signal" value="some_signals">
+                <span class="reflection-btn">Some signals present</span>
+              </label>
+              <label class="reflection-option">
+                <input type="radio" name="reflection_signal" value="clear_read">
+                <span class="reflection-btn">Clear read either way</span>
+              </label>
+            </div>
+
+            <div class="form-group">
+              <label for="reflectionNotes">Additional Notes <span style="font-weight:400; text-transform:none; letter-spacing:0; font-size:0.85em; color:#999;">(optional)</span></label>
+              <textarea id="reflectionNotes" name="reflection_notes" rows="4" placeholder="Any additional context, patterns noticed, or thoughts that don't fit neatly into the pillar structure…"></textarea>
+            </div>
+          </div>
+
+          <!-- Print footer (shown only in print) -->
+          <div class="print-footer" aria-hidden="true">
+            Risk Topography &mdash; Pre-Diligence Lab &nbsp;|&nbsp; yCITIES &mdash; youthcities.org &nbsp;|&nbsp; Not investment advice. No recommendation has been made.
+          </div>
+
+        </form><!-- /topoForm -->
+
+      </div><!-- /container -->
+    </section>
+
+    <!-- ================================================================
+         EXPORT BAND
+         ================================================================ -->
+    <div class="export-band">
+      <div class="container">
+        <h2>Export This Topography</h2>
+        <p style="color:#555; margin-bottom:1.25rem; max-width:520px; margin-left:auto; margin-right:auto;">Use your browser's Save as PDF option to save a clean copy. Nothing on this form is transmitted or stored.</p>
+        <button type="button" class="btn btn-primary" id="exportBtn" style="font-size:1rem; padding:0.75rem 2.25rem;" onclick="window.print()">
+          Export as PDF
+        </button>
+        <p class="export-note">Risk Topography &mdash; Pre-Diligence Lab &nbsp;&middot;&nbsp; Not investment advice &nbsp;&middot;&nbsp; No recommendation has been made</p>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-logo">
+          <a href="index.html" aria-label="yCITIES homepage">
+            <img src="images/yCITIES-logo.png" alt="yCITIES" width="80">
+          </a>
+        </div>
+        <div class="footer-content">
+          <p><strong>yCITIES</strong> — Creating Impact Through Innovation, Entrepreneurship, and Sustainability</p>
+          <p><a href="mailto:outreach@youthcities.org" class="footer-email">outreach@youthcities.org</a></p>
+        </div>
+        <nav class="footer-nav" aria-label="Footer navigation">
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="founder.html">Founder</a></li>
+            <li><a href="programs.html">Programs</a></li>
+            <li><a href="pre-diligence-memos.html">Pre-Diligence Memos</a></li>
+            <li><a href="founder-submissions.html">Founder Submissions</a></li>
+            <li><a href="mangrove-circle.html">Mangrove Circle</a></li>
+            <li><a href="musings.html">Musings</a></li>
+            <li><a href="https://ycities-turtleboat.vercel.app" target="_blank" rel="noopener noreferrer">Turtleboat ↗</a></li>
+          </ul>
+        </nav>
+      </div>
+      <p class="footer-copy">&copy; 2026 yCITIES. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script>
+    /* ============================================================
+       Risk Topography — Dynamic progress tracking
+       ============================================================ */
+
+    // All 24 radio group names
+    const PIECE_NAMES = [
+      // Problem Pillar (6)
+      'p1_anatomy', 'p1_severity', 'p1_portability',
+      'p1_value',   'p1_competitive', 'p1_ambition',
+      // Character Pillar (6)
+      'p2_who_for', 'p2_who_cares', 'p2_payer',
+      'p2_cope',    'p2_acquirers',  'p2_alignment',
+      // Setting Pillar (6)
+      'p3_lastmile', 'p3_infra',  'p3_regs',
+      'p3_cultural', 'p3_whynow', 'p3_geography',
+      // Solution Pillar (6)
+      'p4_moat',      'p4_10x',      'p4_repeat',
+      'p4_gtm',       'p4_reality',  'p4_issolution'
+    ];
+
+    const TOTAL = PIECE_NAMES.length; // 24
+
+    function countScored() {
+      return PIECE_NAMES.filter(function(name) {
+        return document.querySelector('input[name="' + name + '"]:checked') !== null;
+      }).length;
+    }
+
+    function updateProgress() {
+      var scored = countScored();
+      var pct    = (scored / TOTAL) * 100;
+
+      document.getElementById('progressBar').style.width  = pct + '%';
+      document.getElementById('progressCount').textContent = scored + ' of ' + TOTAL + ' Scored';
+    }
+
+    // Set today's date as default
+    (function setDefaultDate() {
+      var dateInput = document.getElementById('sessionDate');
+      if (dateInput && !dateInput.value) {
+        var today = new Date();
+        var yyyy  = today.getFullYear();
+        var mm    = String(today.getMonth() + 1).padStart(2, '0');
+        var dd    = String(today.getDate()).padStart(2, '0');
+        dateInput.value = yyyy + '-' + mm + '-' + dd;
+      }
+    })();
+
+    // Listen for any radio change in the pillar blocks
+    document.getElementById('topoForm').addEventListener('change', function(e) {
+      if (e.target.type === 'radio' && PIECE_NAMES.indexOf(e.target.name) !== -1) {
+        updateProgress();
+      }
+    });
+
+    // Initialize on load
+    updateProgress();
+  </script>
+</body>
+</html>
